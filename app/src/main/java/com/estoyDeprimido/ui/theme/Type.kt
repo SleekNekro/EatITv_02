@@ -32,10 +32,15 @@ val MyTypography = Typography(
         fontFamily = roboto,
         fontWeight = FontWeight.Medium // Para subtítulos
     ),
+    labelMedium = TextStyle(
+        fontFamily = roboto,
+        fontWeight = FontWeight.Bold
+    ),
     labelSmall = TextStyle(
         fontFamily = roboto,
         fontWeight = FontWeight.Thin // Pequeños detalles
-    )
+    ),
+
 )
 
 

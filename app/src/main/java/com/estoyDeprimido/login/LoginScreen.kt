@@ -1,7 +1,12 @@
 package com.estoyDeprimido.login
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -21,11 +27,11 @@ import com.estoyDeprimido.R
 class LoginScreen : Screen {
     @Composable
     override fun Content() {
-        var selectedTab by remember { mutableStateOf(0) }
+        var selectedTab by remember { mutableIntStateOf(0) }
         val tabTitles = listOf("Login", "Registro")
 
         Column(
-            modifier = Modifier.fillMaxSize().background(Color(0xFFF8F2F2)).padding(16.dp),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(50.dp))
@@ -41,30 +47,34 @@ class LoginScreen : Screen {
             // TabRow redondeado
             TabRow(
                 selectedTabIndex = selectedTab,
+                containerColor = Color.Transparent,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp)) // 🔥 Bordes redondeados en el contenedor
-                    .background(Color(0xFFE91E63)), // Color de fondo del TabRow
-                indicator = { tabPositions ->
-                    SecondaryIndicator(
-                        Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                        color = Color.White // Color del indicador
-                    )
-                },
-                divider = {} // Oculta la línea separadora
+                    .clip(RoundedCornerShape(30.dp)),
+                indicator = {},
+                divider = {}
             ) {
                 tabTitles.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
-                        text = {
-                            Text(
-                                title,
-                                fontSize = 18.sp,
-                                color = Color.White
+
+                    ){
+                        Box(
+                            modifier = Modifier.background(
+                            color = if (selectedTab==index) MaterialTheme.colorScheme.onSecondary
+                                else Color.Transparent,
+                                shape = RoundedCornerShape(30.dp)
                             )
+                                .padding(vertical = 8.dp, horizontal = 61.dp)
+                        ){
+                                Text(
+                                    title,
+                                    fontSize = 18.sp,
+                                    color = if (selectedTab==index) Color.White else MaterialTheme.colorScheme.primary
+                                )
                         }
-                    )
+                    }
                 }
             }
 
@@ -79,12 +89,25 @@ class LoginScreen : Screen {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Frase final
-            Text(
-                text = "If u can cook it u can share it 😊",
+            Row(
+                Modifier.padding(16.dp),
+                Arrangement.spacedBy(8.dp),
+                Alignment.CenterVertically
+            ) {
+                Text(
+                text = "If u can cook it u can share it",
+                style = MaterialTheme.typography.headlineMedium,
                 fontSize = 16.sp,
-                color = Color(0xFF6A1B9A)
-            )
+                color = Color.Black
+                )
+                Image(
+                    painterResource(R.drawable.logoeatit_oscuro),
+                    contentDescription = null,
+                    Modifier.size(15.dp)
+
+                )
+            }
+
         }
     }
 }
@@ -98,6 +121,7 @@ fun LoginForm() {
         TextField(
             value = username,
             onValueChange = { username = it },
+
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Username") }
         )
@@ -112,8 +136,27 @@ fun LoginForm() {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            Modifier.padding(16.dp),
+            Arrangement.spacedBy(6.dp),
+            Alignment.CenterVertically
 
-        Text("Forgot your password? Click here", color = Color(0xFFE91E63))
+        ) {
+            Text(
+                "Forgot your password?",
+                color = Color.Black,
+                style = MaterialTheme.typography.labelSmall
+            )
+            Text(
+                "Click here",
+                color = MaterialTheme.colorScheme.onSecondary,
+                style = MaterialTheme.typography.labelMedium.copy(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("url"))
+                }
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
