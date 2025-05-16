@@ -14,11 +14,12 @@ import com.estoyDeprimido.login.LoginScreen
 import com.estoyDeprimido.ui.theme.EatITv_02Theme
 import org.github.sleeknekro.nav.Navigation
 
+
 class MainActivity:ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent { EatITv_02Theme {
-                Navigator(LoginScreen()){
+                Navigator(Navigation()){
                     n-> SlideTransition(n)
                 }
             }

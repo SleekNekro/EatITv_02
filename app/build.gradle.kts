@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.ktor.client.core.jvm)
     implementation(libs.ktor.client.content.negotiation.jvm)
     implementation(libs.kotlinx.serialization.json.jvm)
+    implementation("io.ktor:ktor-client-cio-jvm:3.1.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
