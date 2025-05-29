@@ -1,17 +1,13 @@
-package com.estoyDeprimido.login
+package com.estoyDeprimido.ui.Screen
 
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,17 +17,42 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.estoyDeprimido.R
+import com.estoyDeprimido.ui.viewmodels.AuthViewModel
+import com.estoyDeprimido.ui.states.AuthUiState
+import org.github.sleeknekro.nav.Navigation
 
 class LoginScreen : Screen {
     @Composable
     override fun Content() {
+        // Obtiene el ViewModel y el Navigator de Voyager.
+        val viewModel = viewModel<AuthViewModel>()
+        val navigator = LocalNavigator.currentOrThrow
+
+        // Para controlar cuál pestaña se muestra: Login o Registro.
         var selectedTab by remember { mutableIntStateOf(0) }
         val tabTitles = listOf("Login", "Registro")
 
+        // Observa el estado de la UI proveniente del ViewModel.
+        val uiState by viewModel.uiState.collectAsState()
+
+        // Navega a la pantalla de navegación (HomeTab) cuando el login es exitoso.
+        LaunchedEffect(uiState) {
+            if (uiState is AuthUiState.Success) {
+                navigator.replaceAll(Navigation())
+            }
+        }
+
+        // Contenido visual de la pantalla de login/registro.
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(50.dp))
@@ -44,7 +65,7 @@ class LoginScreen : Screen {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // TabRow redondeado
+            // TabRow con pestañas para Login y Registro.
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = Color.Transparent,
@@ -57,22 +78,22 @@ class LoginScreen : Screen {
                 tabTitles.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-
-                    ){
+                        onClick = { selectedTab = index }
+                    ) {
                         Box(
-                            modifier = Modifier.background(
-                            color = if (selectedTab==index) MaterialTheme.colorScheme.onSecondary
-                                else Color.Transparent,
-                                shape = RoundedCornerShape(30.dp)
-                            )
-                                .padding(vertical = 8.dp, horizontal = 61.dp)
-                        ){
-                                Text(
-                                    title,
-                                    fontSize = 18.sp,
-                                    color = if (selectedTab==index) Color.White else MaterialTheme.colorScheme.primary
+                            modifier = Modifier
+                                .background(
+                                    color = if (selectedTab == index) MaterialTheme.colorScheme.onSecondary
+                                    else Color.Transparent,
+                                    shape = RoundedCornerShape(30.dp)
                                 )
+                                .padding(vertical = 8.dp, horizontal = 61.dp)
+                        ) {
+                            Text(
+                                title,
+                                fontSize = 18.sp,
+                                color = if (selectedTab == index) Color.White else MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
                 }
@@ -80,50 +101,47 @@ class LoginScreen : Screen {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Animación entre Login y Registro
+            // Muestra el formulario correspondiente según la pestaña seleccionada.
             if (selectedTab == 0) {
-                LoginForm()
+                LoginForm(viewModel)
             } else {
-                RegisterForm()
+                RegisterForm(viewModel)
             }
 
             Spacer(modifier = Modifier.height(30.dp))
 
             Row(
-                Modifier.padding(16.dp),
-                Arrangement.spacedBy(8.dp),
-                Alignment.CenterVertically
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                text = "If u can cook it u can share it",
-                style = MaterialTheme.typography.headlineMedium,
-                fontSize = 16.sp,
-                color = Color.Black
+                    text = "If u can cook it u can share it",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontSize = 16.sp,
+                    color = Color.Black
                 )
                 Image(
-                    painterResource(R.drawable.logoeatit_oscuro),
+                    painter = painterResource(R.drawable.logoeatit_oscuro),
                     contentDescription = null,
-                    Modifier.size(15.dp)
-
+                    modifier = Modifier.size(15.dp)
                 )
             }
-
         }
     }
 }
 
 @Composable
-fun LoginForm() {
-    var username by remember { mutableStateOf("") }
+fun LoginForm(viewModel: AuthViewModel) {
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Column {
         TextField(
-            value = username,
-            onValueChange = { username = it },
-
+            value = email,
+            onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Username") }
+            label = { Text("Email") }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -136,11 +154,11 @@ fun LoginForm() {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            Modifier.padding(16.dp),
-            Arrangement.spacedBy(6.dp),
-            Alignment.CenterVertically
 
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 "Forgot your password?",
@@ -152,18 +170,21 @@ fun LoginForm() {
                 color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.labelMedium.copy(textDecoration = TextDecoration.Underline),
                 modifier = Modifier.clickable {
+                    // Abre una URL para recuperar la contraseña.
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("url"))
+                    // En este ejemplo no se envía el intent ya que se requiere un contexto.
                 }
             )
         }
 
-
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón de enviar formulario
+        // Botón para enviar el formulario de login.
         Button(
-            onClick = { /* Acción de login */ },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            onClick = { viewModel.login(email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
         ) {
@@ -173,7 +194,7 @@ fun LoginForm() {
 }
 
 @Composable
-fun RegisterForm() {
+fun RegisterForm(viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -206,10 +227,12 @@ fun RegisterForm() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón de enviar formulario
+        // Botón para enviar el formulario de registro.
         Button(
-            onClick = { /* Acción de registro */ },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            onClick = { viewModel.register(username, email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
         ) {

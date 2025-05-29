@@ -1,4 +1,4 @@
-package com.estoyDeprimido.nav
+package com.estoyDeprimido.ui.Screen.nav
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

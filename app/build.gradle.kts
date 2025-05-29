@@ -50,17 +50,32 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material)
+    implementation("com.google.android.material:material:1.12.0")
 
     //voyager
     implementation(libs.voyager.navigator)
     implementation(libs.voyager.tab.navigator)
     implementation(libs.voyager.transitions)
 
+    // Corrutinas
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    // ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
+
+
     //ktor y serializacion
     implementation(libs.ktor.client.core.jvm)
     implementation(libs.ktor.client.content.negotiation.jvm)
     implementation(libs.kotlinx.serialization.json.jvm)
     implementation("io.ktor:ktor-client-cio-jvm:3.1.3")
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

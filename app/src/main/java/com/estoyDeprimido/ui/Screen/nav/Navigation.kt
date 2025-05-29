@@ -40,7 +40,7 @@ import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabDisposable
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.estoyDeprimido.R
-import com.estoyDeprimido.nav.SearchTab
+import com.estoyDeprimido.ui.Screen.nav.SearchTab
 
 class Navigation : Screen {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,45 +87,45 @@ class Navigation : Screen {
                     Modifier.border(1.dp, color = Color(0xFFCAC4D0))
                     BottomNavigation(backgroundColor = Color(0xFFDFDDCE)) {
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == HomeTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = HomeTab.options.icon!!,
                                     contentDescription = HomeTab.options.title,
-                                    selected = (tabNavigator.current.key == HomeTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = HomeTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == SearchTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = SearchTab.options.icon!!,
                                     contentDescription = SearchTab.options.title,
-                                    selected = (tabNavigator.current.key == SearchTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = SearchTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == CreateTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = CreateTab.options.icon!!,
                                     contentDescription = CreateTab.options.title,
-                                    selected = (tabNavigator.current.key == CreateTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = CreateTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == ProfileTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = ProfileTab.options.icon!!,
                                     contentDescription = ProfileTab.options.title,
-                                    selected = (tabNavigator.current.key == ProfileTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = ProfileTab }

@@ -2,4 +2,17 @@
 <resources>
 
     <style name="Theme.EatITv_02" parent="android:Theme.Material.Light.NoActionBar" />
-</resources>
+            <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+                <!-- Or any other appropriate parent like Theme.Material3.DayNight -->
+                <!-- You can put minimal theming here if Compose handles most of it,
+                     but it needs to be a valid theme. -->
+                <item name="colorPrimary">@color/purple_500</item> <!-- Example -->
+            </style>
+
+            <!-- ... other styles ... -->
+            <!-- <style name="Theme.EatITv_02" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+                <- Or Theme.Material3.DayNight.NoActionBar -->
+                
+    <!-- <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!- Or any other appropriate parent like Theme.Material3.DayNight -->
+        </resources>

@@ -1,4 +1,4 @@
-package com.estoyDeprimido.utils
+package com.estoyDeprimido.data.remote.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
