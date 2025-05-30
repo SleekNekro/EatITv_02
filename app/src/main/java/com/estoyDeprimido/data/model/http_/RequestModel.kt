@@ -1,4 +1,4 @@
-package com.estoyDeprimido.data.model
+package com.estoyDeprimido.data.model.http_
 
 import kotlinx.serialization.Serializable
 

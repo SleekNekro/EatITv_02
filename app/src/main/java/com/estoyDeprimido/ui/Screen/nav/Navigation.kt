@@ -1,6 +1,5 @@
 package org.github.sleeknekro.nav
 
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -42,6 +41,7 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.estoyDeprimido.R
 import com.estoyDeprimido.ui.Screen.nav.SearchTab
 
+
 class Navigation : Screen {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +49,7 @@ class Navigation : Screen {
     @Composable
     override fun Content() {
         TabNavigator(
-            HomeTab,
+            HomeTab,   // La pestaña inicial es HomeTab.
             tabDisposable = {
                 TabDisposable(
                     it,
@@ -80,52 +80,54 @@ class Navigation : Screen {
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(Color(0xFF66335A))
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color(0xFF66335A)
+                        )
                     )
                 },
                 bottomBar = {
                     Modifier.border(1.dp, color = Color(0xFFCAC4D0))
                     BottomNavigation(backgroundColor = Color(0xFFDFDDCE)) {
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == HomeTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = HomeTab.options.icon!!,
                                     contentDescription = HomeTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = (tabNavigator.current.key == HomeTab.key)
                                 )
                             },
                             onClick = { tabNavigator.current = HomeTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == SearchTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = SearchTab.options.icon!!,
                                     contentDescription = SearchTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = (tabNavigator.current.key == SearchTab.key)
                                 )
                             },
                             onClick = { tabNavigator.current = SearchTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == CreateTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = CreateTab.options.icon!!,
                                     contentDescription = CreateTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = (tabNavigator.current.key == CreateTab.key)
                                 )
                             },
                             onClick = { tabNavigator.current = CreateTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == ProfileTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = ProfileTab.options.icon!!,
                                     contentDescription = ProfileTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = (tabNavigator.current.key == ProfileTab.key)
                                 )
                             },
                             onClick = { tabNavigator.current = ProfileTab }
@@ -136,7 +138,6 @@ class Navigation : Screen {
         }
     }
 }
-
 
 @Composable
 fun FancyBottomNavigationIcon(
@@ -152,16 +153,17 @@ fun FancyBottomNavigationIcon(
     cornerRadius: Dp = 16.dp,
     animationDuration: Int = 300
 ) {
+    // Anima la escala del icono
     val scale by animateFloatAsState(
         targetValue = if (selected) 1.2f else 1.0f,
         animationSpec = tween(durationMillis = animationDuration)
     )
-
+    // Anima el tinte del icono
     val tint by animateColorAsState(
         targetValue = if (selected) activeTint else inactiveTint,
         animationSpec = tween(durationMillis = animationDuration)
     )
-
+    // Anima el color del fondo
     val bgColor by animateColorAsState(
         targetValue = if (selected) activeBackground else inactiveBackground,
         animationSpec = tween(durationMillis = animationDuration)

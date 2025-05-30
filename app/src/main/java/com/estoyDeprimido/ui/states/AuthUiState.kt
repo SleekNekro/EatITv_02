@@ -1,7 +1,6 @@
 package com.estoyDeprimido.ui.states
 
-import com.estoyDeprimido.data.model.UserData
-import com.estoyDeprimido.data.model.UserResponse
+import com.estoyDeprimido.data.model.http_.UserResponse
 
 sealed class AuthUiState {
     object Initial : AuthUiState()

@@ -1,11 +1,11 @@
-package com.estoyDeprimido.data.remote.network
+package com.estoyDeprimido.data.remote
 
-import com.estoyDeprimido.data.model.LoginRequest
-import com.estoyDeprimido.data.model.LoginResponse
-import com.estoyDeprimido.data.model.RegisterRequest
-import com.estoyDeprimido.data.model.RegisterResponse
+import com.estoyDeprimido.data.model.RecipeData
 import com.estoyDeprimido.data.model.UserData
-import com.estoyDeprimido.data.model.UserResponse
+import com.estoyDeprimido.data.model.http_.LoginRequest
+import com.estoyDeprimido.data.model.http_.LoginResponse
+import com.estoyDeprimido.data.model.http_.RegisterRequest
+import com.estoyDeprimido.data.model.http_.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,12 +19,16 @@ interface ApiService {
     @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
-    @GET("users/{id}")
+    @GET("user/{id}")
     suspend fun getUserProfile(@Path("id") userId: Long): Response<UserData>
 
-    @GET("users/{id}/followers")
+    @GET("user/{id}/followers")
     suspend fun getUserFollowers(@Path("id") userId: Long): Response<List<UserData>>
 
-    @GET("users/{id}/following")
+    @GET("user/{id}/following")
     suspend fun getUserFollowing(@Path("id") userId: Long): Response<List<UserData>>
+
+    // Nuevo endpoint para obtener recetas
+    @GET("recipe")
+    suspend fun getRecipes(): Response<List<RecipeData>>
 }

@@ -8,9 +8,11 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.estoyDeprimido.data.model.UserData
-import com.estoyDeprimido.data.model.UserResponse
+import com.estoyDeprimido.data.model.http_.UserResponse
 import kotlinx.coroutines.flow.first
+import android.util.Log
 
+private const val TAG = "DataStore"
 object UserPreferences {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
 
@@ -22,6 +24,7 @@ object UserPreferences {
             prefs[stringPreferencesKey("profilePic")] = user.profilePic ?: ""
             prefs[intPreferencesKey("followers")] = user.followers
         }
+        Log.d(TAG, "saveUser: Token guardado: $token")
     }
 
 
@@ -40,6 +43,8 @@ object UserPreferences {
 
     suspend fun getToken(context: Context): String? {
         val prefs = context.dataStore.data.first()
-        return prefs[stringPreferencesKey("token")]
+        val token = prefs[stringPreferencesKey("token")]
+        Log.d(TAG, "getToken: Token obtenido: ${token ?: "null o vacío"}")
+        return token
     }
 }
