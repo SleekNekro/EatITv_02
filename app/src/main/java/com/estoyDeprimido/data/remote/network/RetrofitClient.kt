@@ -4,52 +4,69 @@ import android.content.Context
 import android.util.Log
 import com.estoyDeprimido.data.preferences.UserPreferences
 import kotlinx.coroutines.runBlocking
+import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 object RetrofitClient {
-    private const val BASE_URL = "https://cb76-212-57-66-242.ngrok-free.app"
+    private const val BASE_URL = "https://75b7-212-57-66-242.ngrok-free.app"
     private const val TAG = "RetrofitClient"
 
+    // 🔥 Token almacenado en memoria para evitar múltiples accesos a UserPreferences
+    private var cachedToken: String? = null
+
+    fun updateToken(token: String) {
+        cachedToken = token
+    }
+
     // Interceptor que añade el header "Authorization" en cada request
-    private class AuthInterceptor(private val context: Context) : Interceptor {
+    private class AuthInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-            // Log de la URL que se está solicitando
-            Log.d(TAG, "AuthInterceptor: Intercepting request to ${chain.request().url}")
+            val token = cachedToken ?: ""
 
-            // Obtenemos el token de forma síncrona
-            val token = runBlocking {
-                val retrievedToken = UserPreferences.getToken(context)
-                Log.d(TAG, "AuthInterceptor: Retrieved token: ${retrievedToken ?: "null o vacío"}")
-                retrievedToken
-            } ?: ""
-
-            if (token.isBlank()) {
-                Log.d(TAG, "AuthInterceptor: Token es vacío o no se encontró")
-            }
-
-            // Se añade el header Authorization con el token
             val newRequest = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
 
-            Log.d(TAG, "AuthInterceptor: Header añadido: Authorization: Bearer $token")
             return chain.proceed(newRequest)
         }
     }
 
-    // Función para crear el ApiService pasando el context
     fun createApiService(context: Context): ApiService {
-        val authInterceptor = AuthInterceptor(context)
+        // 🔥 Recuperar el token desde UserPreferences y actualizar el cache
+        val token = runBlocking { UserPreferences.getToken(context) } ?: ""
+        updateToken(token)
+
+        val authInterceptor = AuthInterceptor()
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
+        // 🔥 Configurar TrustManager para aceptar certificados autofirmados (Solo en desarrollo)
+        val trustAllCerts = arrayOf<TrustManager>(
+            object : X509TrustManager {
+                override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            }
+        )
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        val sslSocketFactory = sslContext.socketFactory
+
         val okHttpClient = OkHttpClient.Builder()
+            .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+            .hostnameVerifier { _, _ -> true }
+            .connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT))
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
@@ -61,4 +78,5 @@ object RetrofitClient {
             .build()
             .create(ApiService::class.java)
     }
+
 }

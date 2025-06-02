@@ -5,6 +5,8 @@ data class UserData(
     val username: String,
     val email: String,
     val profilePic: String?,
+    val recipesCount: Int,
     val followers: Int,
+    val following: Int ,
     val createdAt: String
 )

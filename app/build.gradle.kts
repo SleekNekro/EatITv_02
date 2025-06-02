@@ -70,12 +70,16 @@ dependencies {
     implementation(libs.kotlinx.serialization.json.jvm)
     implementation("io.ktor:ktor-client-cio-jvm:3.1.3")
 
+    implementation ("androidx.compose.runtime:runtime-livedata")
+
+
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation(libs.androidx.paging.common.android)
 
 
     testImplementation(libs.junit)

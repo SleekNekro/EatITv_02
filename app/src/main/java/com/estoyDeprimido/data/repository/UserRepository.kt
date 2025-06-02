@@ -3,6 +3,7 @@ package com.estoyDeprimido.data.repository
 import android.content.Context
 import android.util.Log
 import com.estoyDeprimido.data.model.UserData
+import com.estoyDeprimido.data.model.http_.FollowersCountResponse
 import com.estoyDeprimido.data.model.http_.LoginRequest
 import com.estoyDeprimido.data.model.http_.LoginResponse
 import com.estoyDeprimido.data.model.http_.RegisterRequest
@@ -42,13 +43,29 @@ object UserRepository {
         Result.failure(e)
     }
 
-    suspend fun getUserById(context: Context, userId: Long): UserData {
+    suspend fun apiGetUserById(context: Context, userId: Long): UserData? {
+        Log.d("UserRepository", "🟢 Solicitando datos para userId=$userId")
         val api = RetrofitClient.createApiService(context)
         val response = api.getUserProfile(userId)
-        if (response.isSuccessful) {
-            return response.body()!!
+
+        return if (response.isSuccessful) {
+            val userData = response.body()
+            Log.d("UserRepository", "🟢 Datos obtenidos correctamente: ${userData?.username ?: "Usuario no encontrado"}")
+            userData
         } else {
-            throw Exception("Error al obtener datos de usuario: ${response.code()}")
+            Log.e("UserRepository", "🔴 Error en la API: ${response.errorBody()?.string()}")
+            null
         }
+    }
+
+    suspend fun getFollowers(context: Context, userId: Long): FollowersCountResponse {
+        val api = RetrofitClient.createApiService(context)
+        val response = api.getUserFollowers(userId)
+        return response
+    }
+    suspend fun getFollowing(context: Context, userId: Long): FollowersCountResponse {
+        val api = RetrofitClient.createApiService(context)
+        val response = api.getUserFollowing(userId)
+        return response
     }
 }

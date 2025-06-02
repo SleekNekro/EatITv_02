@@ -2,15 +2,25 @@ package com.estoyDeprimido.data.remote
 
 import com.estoyDeprimido.data.model.RecipeData
 import com.estoyDeprimido.data.model.UserData
+import com.estoyDeprimido.data.model.http_.FollowersCountResponse
+import com.estoyDeprimido.data.model.http_.LikeStatusResponse
+import com.estoyDeprimido.data.model.http_.LikesCountResponse
+import com.estoyDeprimido.data.model.http_.LikesResponse
 import com.estoyDeprimido.data.model.http_.LoginRequest
 import com.estoyDeprimido.data.model.http_.LoginResponse
+import com.estoyDeprimido.data.model.http_.RecipesResponse
 import com.estoyDeprimido.data.model.http_.RegisterRequest
 import com.estoyDeprimido.data.model.http_.RegisterResponse
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/register")
@@ -22,13 +32,39 @@ interface ApiService {
     @GET("user/{id}")
     suspend fun getUserProfile(@Path("id") userId: Long): Response<UserData>
 
-    @GET("user/{id}/followers")
-    suspend fun getUserFollowers(@Path("id") userId: Long): Response<List<UserData>>
+    @GET("follower/{id}/followers/count")
+    suspend fun getUserFollowers(@Path("id") userId: Long): FollowersCountResponse
 
-    @GET("user/{id}/following")
-    suspend fun getUserFollowing(@Path("id") userId: Long): Response<List<UserData>>
+    @GET("follower/{id}/following/count")
+    suspend fun getUserFollowing(@Path("id") userId: Long): FollowersCountResponse
 
-    // Nuevo endpoint para obtener recetas
     @GET("recipe")
     suspend fun getRecipes(): Response<List<RecipeData>>
+
+    @GET("recipe/recipes/search")
+    suspend fun searchRecipes(@Query("title") title: String): List<RecipeData>
+
+    @GET("recipe/all/{id}")
+    suspend fun getUserRecipes(@Path("id") userId: Long): Response<List<RecipeData>>
+
+    @POST("like")
+    suspend fun addLike(@Body body: RequestBody): Response<Unit>
+
+    @GET("like/recipe/{recipeId}/likesCount")
+    suspend fun getRecipeLikesCount(
+        @Path("recipeId") recipeId: Long
+    ): Response<LikesCountResponse>
+
+    @GET("like/status/{userId}/{recipeId}")
+    suspend fun getLikeStatus(
+        @Path("userId") userId: Long,
+        @Path("recipeId") recipeId: Long
+    ): Response<LikeStatusResponse>
+
+    @PUT("like")
+    @FormUrlEncoded
+    suspend fun removeLike(
+        @Field("userId") userId: Long,
+        @Field("recipeId") recipeId: Long
+    ): Response<Unit>
 }

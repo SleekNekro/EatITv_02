@@ -12,3 +12,8 @@ data class RecipeData(
     val imageUrl: String?,
     val createdAt: Long
 )
+
+fun RecipeData.toRecipeCardData(): RecipeCardData {
+    return RecipeCardData(id, title, description, imageUrl,
+        servings.toString(), createdAt, null, null, false)
+}

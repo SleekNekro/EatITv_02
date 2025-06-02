@@ -11,8 +11,11 @@ import com.estoyDeprimido.data.model.UserData
 import com.estoyDeprimido.data.model.http_.UserResponse
 import kotlinx.coroutines.flow.first
 import android.util.Log
+import androidx.datastore.preferences.core.longPreferencesKey
+import kotlinx.coroutines.runBlocking
 
-private const val TAG = "DataStore"
+private const val TAG1 = "DataStore"
+private const val TAG2 = "DataStore_Token"
 object UserPreferences {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
 
@@ -23,8 +26,9 @@ object UserPreferences {
             prefs[stringPreferencesKey("email")] = user.email
             prefs[stringPreferencesKey("profilePic")] = user.profilePic ?: ""
             prefs[intPreferencesKey("followers")] = user.followers
+            prefs[longPreferencesKey("userId")] = user.id
         }
-        Log.d(TAG, "saveUser: Token guardado: $token")
+        Log.d(TAG1, "saveUser: User ID guardado: ${user.id}, Token guardado: $token")
     }
 
 
@@ -37,14 +41,24 @@ object UserPreferences {
             email = prefs[stringPreferencesKey("email")] ?: "",
             profilePic = prefs[stringPreferencesKey("profilePic")] ?: "",
             followers = prefs[intPreferencesKey("followers")] ?: 0,
-            createdAt = prefs[stringPreferencesKey("createdAt")] ?: ""
+            createdAt = prefs[stringPreferencesKey("createdAt")] ?: "",
+            following = 0,
+            recipesCount = 0
         )
     }
 
     suspend fun getToken(context: Context): String? {
         val prefs = context.dataStore.data.first()
         val token = prefs[stringPreferencesKey("token")]
-        Log.d(TAG, "getToken: Token obtenido: ${token ?: "null o vacío"}")
+        Log.d(TAG2, "getToken: Token obtenido: ${token ?: "null o vacío"}")
         return token
     }
+
+    suspend fun getUserId(context: Context): Long? {
+
+        val prefs = context.dataStore.data.first() // ✅ No es necesario `runBlocking`
+        Log.d("UserPreferences", "getUserId: User ID obtenido: ${prefs[longPreferencesKey("userId")] ?: "null o vacío"}")
+        return prefs[longPreferencesKey("userId")]
+    }
+
 }

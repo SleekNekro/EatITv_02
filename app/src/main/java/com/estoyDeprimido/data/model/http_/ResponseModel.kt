@@ -1,12 +1,19 @@
 package com.estoyDeprimido.data.model.http_
 
+import com.estoyDeprimido.data.model.RecipeData
 import com.estoyDeprimido.data.model.UserData
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class LoginResponse(
     val token: String,
     val user: UserResponse
+)
+
+@Serializable
+data class RecipesResponse(
+    val recipes: List<RecipeData>
 )
 
 @Serializable
@@ -25,6 +32,25 @@ data class FollowResponse(
     val success: Boolean,
     val message: String
 )
+
+
+data class FollowersCountResponse(
+    val followers_count: Long,
+    val following_count: Long
+)
+
+
+data class LikesCountResponse(
+    @SerializedName("likesCount")
+    val likesCount: Int
+)
+
+@Serializable
+data class LikesResponse(val likescount: Int)
+
+@Serializable
+data class LikeStatusResponse(val hasLiked: Boolean)
+
 @Serializable
 data class UserResponse(
     val id: Long,

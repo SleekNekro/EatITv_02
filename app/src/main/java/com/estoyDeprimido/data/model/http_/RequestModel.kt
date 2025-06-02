@@ -15,6 +15,11 @@ data class RegisterRequest(
     val email: String,
 )
 
+data class LikeRequest(
+    val userId: Long,
+    val recipeId: Long
+)
+
 
 @Serializable
 data class RecipeRequest(
