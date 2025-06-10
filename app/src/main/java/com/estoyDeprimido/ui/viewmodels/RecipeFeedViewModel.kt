@@ -24,7 +24,7 @@ class RecipeFeedViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         loadRecipes()
-        subscribeToSseEvents(getApplication()) // 🔥 Suscribirse a SSE
+        subscribeToSseEvents(getApplication())
     }
 
     fun loadRecipes() {

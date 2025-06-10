@@ -36,7 +36,7 @@ object UserPreferences {
         val prefs = context.dataStore.data.first()
         val token = prefs[stringPreferencesKey("token")] ?: return null
         return UserData(
-            id = 0L, // No se guarda el ID aquí
+            id = 0L,
             username = prefs[stringPreferencesKey("username")] ?: "",
             email = prefs[stringPreferencesKey("email")] ?: "",
             profilePic = prefs[stringPreferencesKey("profilePic")] ?: "",
@@ -56,7 +56,7 @@ object UserPreferences {
 
     suspend fun getUserId(context: Context): Long? {
 
-        val prefs = context.dataStore.data.first() // ✅ No es necesario `runBlocking`
+        val prefs = context.dataStore.data.first()
         Log.d("UserPreferences", "getUserId: User ID obtenido: ${prefs[longPreferencesKey("userId")] ?: "null o vacío"}")
         return prefs[longPreferencesKey("userId")]
     }

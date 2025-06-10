@@ -53,7 +53,7 @@ fun HomeScreen(feedViewModel: RecipeFeedViewModel = viewModel(), onUserClick: @C
         ) {
             item { Spacer(modifier = Modifier.height(92.dp)) }
             items(recipesState, key = { it.id }) { recipe ->
-                RecipeCard(recipe)  // Asegúrate de que RecipeCard sepa dibujar la información de RecipeCardData.
+                RecipeCard(recipe)
             }
             item { Spacer(modifier = Modifier.height(92.dp)) }
         }

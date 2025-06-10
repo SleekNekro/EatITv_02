@@ -45,7 +45,7 @@ fun CreateScreen(
 ) {
     val context = LocalContext.current
 
-    // Launcher para seleccionar imagen desde almacenamiento local
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -61,7 +61,7 @@ fun CreateScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(96.dp))
-        // Área para seleccionar y previsualizar la imagen
+
         Box(
             modifier = Modifier
                 .size(150.dp)
@@ -108,11 +108,10 @@ fun CreateScreen(
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
-        // Botón para crear la receta
+
         Button(
             onClick = {
                 viewModel.createRecipe {
-                    // Callback al finalizar la creación de la receta
                     onRecipeCreated()
                 }
             },
@@ -125,7 +124,7 @@ fun CreateScreen(
                 Text("Crear Receta")
             }
         }
-        // Mostrar mensaje de error, en caso de existir
+
         if (viewModel.errorMessage.value.isNotBlank()) {
             Text(
                 text = viewModel.errorMessage.value,

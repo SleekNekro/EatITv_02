@@ -58,7 +58,7 @@ class Navigation : Screen {
     @Composable
     override fun Content() {
         TabNavigator(
-            HomeTab,   // La pestaña inicial es HomeTab.
+            HomeTab,
             tabDisposable = {
                 TabDisposable(
                     it,
@@ -101,7 +101,7 @@ class Navigation : Screen {
                                     alignment = Alignment.TopCenter
                                 )
 
-                                Spacer(Modifier.weight(1f)) // 🔥 Empuja el botón hacia la derecha
+                                Spacer(Modifier.weight(1f))
 
                                 LogoutButton(authViewModel)
                             }
@@ -180,17 +180,17 @@ fun FancyBottomNavigationIcon(
     cornerRadius: Dp = 16.dp,
     animationDuration: Int = 300
 ) {
-    // Anima la escala del icono
+
     val scale by animateFloatAsState(
         targetValue = if (selected) 1.2f else 1.0f,
         animationSpec = tween(durationMillis = animationDuration)
     )
-    // Anima el tinte del icono
+
     val tint by animateColorAsState(
         targetValue = if (selected) activeTint else inactiveTint,
         animationSpec = tween(durationMillis = animationDuration)
     )
-    // Anima el color del fondo
+
     val bgColor by animateColorAsState(
         targetValue = if (selected) activeBackground else inactiveBackground,
         animationSpec = tween(durationMillis = animationDuration)

@@ -44,14 +44,14 @@ object LikeRepository {
 
             Log.d("LikeRepository", "Intentando eliminar Like de receta $recipeId por usuario $userId")
 
-            val response = api.removeLike(userId, recipeId) // ✅ Enviar correctamente
+            val response = api.removeLike(userId, recipeId)
 
 
             if (response.isSuccessful) {
                 Log.d("LikeRepository", "Like eliminado de receta $recipeId por usuario $userId")
 
                 val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                sharedPreferences.edit { remove("likes_receta_$recipeId") } // ✅ Borra la caché ANTES de actualizar
+                sharedPreferences.edit { remove("likes_receta_$recipeId") }
 
                 val updatedLikesCount = getLikesCount(context, recipeId) - 1
                 updateLikesCount(context, recipeId, updatedLikesCount)
@@ -79,10 +79,10 @@ object LikeRepository {
 
         return if (response.isSuccessful) {
             val status = response.body()?.hasLiked ?: false
-            likeStatusCache[recipeId] = status // ✅ Asegura que la caché siempre refleje el estado correcto
+            likeStatusCache[recipeId] = status
             status
         } else {
-            likeStatusCache[recipeId] ?: false // 🔥 Si la API falla, devuelve la caché (si existe)
+            likeStatusCache[recipeId] ?: false
         }
     }
 

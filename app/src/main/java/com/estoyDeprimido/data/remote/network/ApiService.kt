@@ -36,7 +36,7 @@ interface ApiService {
     @POST("auth/register")
     suspend fun registerUser(
         @PartMap fields: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part profilePic: MultipartBody.Part? // La imagen se envía como parte del formulario
+        @Part profilePic: MultipartBody.Part?
     ): Response<RegisterResponeImg>
 
     @POST("auth/login")
@@ -100,9 +100,9 @@ interface ApiService {
             @Path("id") userId: Long,
             @Part("username") username: RequestBody,
             @Part("email") email: RequestBody,
-            @Part("password") password: RequestBody?,  // Puede ser nulo
-            @Part profilePic: MultipartBody.Part?        // La foto, también puede ser nula
-        ): Response<ResponseBody> // O la respuesta que definas
+            @Part("password") password: RequestBody?,
+            @Part profilePic: MultipartBody.Part?
+        ): Response<ResponseBody>
 
 
     @POST("/recipe")

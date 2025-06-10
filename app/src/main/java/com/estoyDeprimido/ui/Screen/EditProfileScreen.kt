@@ -50,7 +50,7 @@ class EditProfileScreen(private val user: UserData) : Screen {
         var newPassword by remember { mutableStateOf("") }
         var newProfilePic by remember { mutableStateOf(user.profilePic) }
 
-        // Lanzador para seleccionar imagen
+
         val imagePicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
@@ -59,12 +59,12 @@ class EditProfileScreen(private val user: UserData) : Screen {
 
         val navigator = LocalNavigator.current
 
-        // Observamos el estado de guardado en el ViewModel
+
         val editProfileState by authViewModel.editProfileState.collectAsState()
 
         LaunchedEffect(editProfileState) {
             if (editProfileState is EditProfileUiState.Saved) {
-                navigator?.pop()  // Vuelve a la pantalla anterior (ProfileScreen)
+                navigator?.pop()
             }
         }
 
@@ -114,14 +114,12 @@ class EditProfileScreen(private val user: UserData) : Screen {
 
             Button(
                 onClick = {
-                    // Construimos un objeto con los datos actualizados.
                     val newProfileData = ProfileData(
                         id = user.id,
                         username = newUsername,
                         email = newEmail,
                         profilePic = newProfilePic
                     )
-                    // Llamamos a la función saveChanges del ViewModel.
                     editProfileViewModel.saveChanges(newProfileData)
                 },
                 colors = ButtonDefaults.buttonColors(Color(0xFF2E7D32))

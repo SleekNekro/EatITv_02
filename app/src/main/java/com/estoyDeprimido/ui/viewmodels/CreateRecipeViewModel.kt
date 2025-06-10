@@ -38,7 +38,7 @@ class CreateRecipeViewModel(application: Application) : AndroidViewModel(applica
         }
         viewModelScope.launch {
             isUploading.value = true
-            // Subir imagen si se seleccionó
+
             var uploadedImageUrl: String? = null
             if (imageUri.value != null) {
                 try {
@@ -58,9 +58,9 @@ class CreateRecipeViewModel(application: Application) : AndroidViewModel(applica
                 }
             }
 
-            // Crear el objeto de receta utilizando la URL de la imagen (o null)
+
             val recipeRequest = CreateRecipeRequest(
-                userId = UserPreferences.getUserId(getApplication())!!, // Ajusta según corresponda o elimina si no se requiere
+                userId = UserPreferences.getUserId(getApplication())!!,
                 title = title.value,
                 description = description.value,
                 servings = servings,

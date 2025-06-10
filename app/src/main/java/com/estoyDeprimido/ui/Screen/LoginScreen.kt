@@ -34,25 +34,23 @@ import com.estoyDeprimido.ui.Screen.nav.Navigation
 class LoginScreen : Screen {
     @Composable
     override fun Content() {
-        // Obtiene el ViewModel y el Navigator de Voyager.
+
         val viewModel = viewModel<AuthViewModel>()
         val navigator = LocalNavigator.currentOrThrow
 
-        // Para controlar cuál pestaña se muestra: Login o Registro.
+
         var selectedTab by remember { mutableIntStateOf(0) }
         val tabTitles = listOf("Login", "Registro")
 
-        // Observa el estado de la UI proveniente del ViewModel.
+
         val uiState by viewModel.uiState.collectAsState()
 
-        // Navega a la pantalla de navegación (HomeTab) cuando el login es exitoso.
         LaunchedEffect(uiState) {
             if (uiState is AuthUiState.Success) {
                 navigator.replaceAll(Navigation())
             }
         }
 
-        // Contenido visual de la pantalla de login/registro.
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -106,7 +104,7 @@ class LoginScreen : Screen {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Muestra el formulario correspondiente según la pestaña seleccionada.
+            // Muestra el form correspondiente
             if (selectedTab == 0) {
                 LoginForm(viewModel)
             } else {
@@ -175,16 +173,13 @@ fun LoginForm(viewModel: AuthViewModel) {
                 color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.labelMedium.copy(textDecoration = TextDecoration.Underline),
                 modifier = Modifier.clickable {
-                    // Abre una URL para recuperar la contraseña.
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("url"))
-                    // En este ejemplo no se envía el intent ya que se requiere un contexto.
                 }
             )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón para enviar el formulario de login.
         Button(
             onClick = { viewModel.login(email, password) },
             modifier = Modifier
@@ -239,7 +234,6 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón para seleccionar imagen
         Button(
             onClick = { launcher.launch("image/*") },
             modifier = Modifier.fillMaxWidth()
@@ -249,7 +243,6 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Mostrar la imagen seleccionada
         imageUri.value?.let { uri ->
             Image(
                 painter = rememberAsyncImagePainter(uri),
@@ -262,13 +255,12 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón para enviar el formulario de registro con la imagen
         Button(
             onClick = { viewModel.register(
                 email = email,
                 username = username,
                 password = password,
-                profilePicUri = imageUri.value, // Se envía la imagen seleccionada al ViewModel
+                profilePicUri = imageUri.value,
                 context = context
             ) },
             modifier = Modifier

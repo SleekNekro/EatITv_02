@@ -39,7 +39,6 @@ fun SearchScreen(
     val listState = rememberLazyListState()
     var searchQuery by remember { mutableStateOf("") }
 
-    // Cargamos las recetas inicialmente si aún no se han cargado
     LaunchedEffect(Unit) {
         feedViewModel.loadRecipes()
     }
@@ -49,7 +48,6 @@ fun SearchScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Campo para introducir la búsqueda
         Spacer(modifier = Modifier.height(150.dp))
         OutlinedTextField(
             value = searchQuery,
@@ -61,12 +59,10 @@ fun SearchScreen(
                 .padding(8.dp)
         )
 
-        // Filtramos las recetas cuyo title contenga el string introducido (ignora mayúsculas/minúsculas)
         val filteredRecipes = recipesState.filter {
             it.title.contains(searchQuery, ignoreCase = true)
         }
 
-        // Si no hay resultados, mostramos un mensaje
         if (filteredRecipes.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -76,19 +72,16 @@ fun SearchScreen(
                 Text("No se encontraron recetas", color = MaterialTheme.colorScheme.onSurface)
             }
         } else {
-            // Mostramos las recetas en una LazyColumn
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Espaciador superior similar a tu HomeScreen
                 item { Spacer(modifier = Modifier.height(50.dp)) }
                 items(filteredRecipes, key = { it.id }) { recipe ->
-                    RecipeCard(recipe)  // Asegúrate de que RecipeCard pueda renderizar RecipeData
+                    RecipeCard(recipe)
                 }
-                // Espaciador inferior
                 item { Spacer(modifier = Modifier.height(92.dp)) }
             }
         }

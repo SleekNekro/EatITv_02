@@ -20,8 +20,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             _editProfileState.value = EditProfileUiState.Loading
             try {
-                // Llamamos al repositorio y pasamos el objeto ProfileData.
-                // Si la contraseña se desea actualizar se pasa en newPassword, sino null.
+
                 val result = UserRepository.updateProfile(getApplication(), newProfileData)
                 result.fold(
                     onSuccess = {
@@ -37,9 +36,9 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    // Función que interactúa con el repositorio para actualizar la info.
+
     private suspend fun updateProfile(newProfileData: ProfileData) {
-        // Ejemplo: Repositorio que actualiza el perfil y arroja una excepción si falla.
+
         UserRepository.updateProfile(getApplication(), newProfileData)
     }
 }

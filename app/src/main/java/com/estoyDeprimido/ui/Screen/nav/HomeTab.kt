@@ -9,9 +9,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.estoyDeprimido.R
-import com.estoyDeprimido.ui.Screen.ProfileScreen
 import com.estoyDeprimido.ui.screens.HomeScreen
-import org.github.sleeknekro.nav.ProfileTab
 
 
 object HomeTab: Tab {

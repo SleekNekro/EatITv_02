@@ -35,10 +35,10 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
             _uiState.value = AuthUiState.Loading
             UserRepository.login(getApplication(), email, password)
                 .onSuccess { loginResponse ->
-                    RetrofitClient.updateToken(loginResponse.token) // 🔥 Actualiza el token en memoria
-                    KtorSseClient.updateToken(loginResponse.token) // 🔥 Actualiza el token en memoria
+                    RetrofitClient.updateToken(loginResponse.token)
+                    KtorSseClient.updateToken(loginResponse.token)
 
-                    // Guarda el token y los datos del usuario en el DataStore
+
                     UserPreferences.saveUser(getApplication(), loginResponse.user, loginResponse.token)
                     _uiState.value = AuthUiState.Success(loginResponse.user)
                 }
@@ -77,8 +77,8 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
 
     fun logout(context: Context, onLogoutComplete: () -> Unit) {
         viewModelScope.launch {
-            UserPreferences.clearUserData(context) // Borra el token y otros datos.
-            onLogoutComplete() // Notifica que se completó el logout.
+            UserPreferences.clearUserData(context)
+            onLogoutComplete()
         }
     }
     fun updateUser(
@@ -89,16 +89,16 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         profilePic: String?
     ) {
         viewModelScope.launch {
-            // Indicamos que se inicia la actualización
+
             _editProfileState.value = EditProfileUiState.Loading
             try {
                 val updateRequest = UpdateUserRequest(username, email, password, profilePic)
                 val response = RetrofitClient.createApiService(getApplication())
-                    .updateUser(userId, updateRequest) // Llamada a Retrofit
+                    .updateUser(userId, updateRequest)
 
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "✅ Usuario actualizado correctamente")
-                    // Actualizamos el estado a 'Saved' para que la UI navegue de vuelta al perfil.
+
                     _editProfileState.value = EditProfileUiState.Saved
                 } else {
                     Log.e("AuthViewModel", "❌ Error al actualizar usuario")

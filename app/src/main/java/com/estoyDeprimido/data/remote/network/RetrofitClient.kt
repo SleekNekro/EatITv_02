@@ -61,14 +61,14 @@ object RetrofitClient {
             }
         )
 
-        val sslContext = SSLContext.getInstance("TLSv1.2")  // 🔥 Forzar TLS 1.2
+        val sslContext = SSLContext.getInstance("TLSv1.2")
         sslContext.init(null, trustAllCerts, java.security.SecureRandom())
         val sslSocketFactory = sslContext.socketFactory
 
         val okHttpClient = OkHttpClient.Builder()
             .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-            .connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)) // 🔥 Eliminado CLEARTEXT
-            //.hostnameVerifier { _, _ -> true }  // 🔥 Comentado para pruebas
+            .connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
+            //.hostnameVerifier { _, _ -> true }
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()

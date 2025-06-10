@@ -47,7 +47,7 @@ object ProfileTab : Tab {
             Log.d("ProfileTAB", "User ID obtenido: $userId")
 
             if (userId != null) {
-                viewModel.loadProfileRecipes() // 🔥 Cargar recetas ANTES de navegar al perfil
+                viewModel.loadProfileRecipes()
             }
         }
 

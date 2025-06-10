@@ -19,7 +19,7 @@ fun LikeButton(
     context: Context,
     userId: Long,
     recipeId: Long,
-    currentLikes: Int, // este parámetro lo puedes seguir pasando, aunque no lo uses para calcular la nueva cuenta
+    currentLikes: Int,
     onLikeChanged: (Boolean, Int) -> Unit
 ) {
     var liked by rememberSaveable { mutableStateOf(false) }

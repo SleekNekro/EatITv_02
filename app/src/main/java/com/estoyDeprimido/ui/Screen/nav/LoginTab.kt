@@ -12,13 +12,13 @@ import com.estoyDeprimido.ui.Screen.LoginScreen
 object LoginTab : Tab {
     @Composable
     override fun Content() {
-        LoginScreen() // Aquí se llama a tu pantalla de login
+        LoginScreen()
     }
 
     override val options: TabOptions
         @Composable
         get() = TabOptions(
-            title = "", // Título vacío para que no aparezca
+            title = "",
             icon = painterResource(0),
             index = 9U
         )

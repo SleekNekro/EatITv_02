@@ -57,12 +57,10 @@ class ProfileScreen(private val userId: Long) : Screen {
         val viewModel: ProfileViewModel = viewModel()
 
 
-        // Lanza la carga de recetas (y, asumiblemente, de usuario) cuando se muestre la pantalla.
         LaunchedEffect(Unit) {
             viewModel.loadProfileRecipes()
         }
 
-        // Obtenemos los estados. Asegúrate de que en tu ViewModel estos flujos existan.
         val user by viewModel.user.collectAsState(initial = null)
         val recipes by viewModel.recipes.collectAsState(initial = emptyList())
         val followersCount by viewModel.followersCount.collectAsState(initial = 0)
@@ -76,7 +74,6 @@ class ProfileScreen(private val userId: Long) : Screen {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Mostramos el perfil del usuario
                 if (user != null) {
                     val profilePicUrl = "${user!!.profilePic}?ts=${System.currentTimeMillis()}"
                     Log.d("ProfileScreen", "profilePic URL: ${user?.profilePic}")
@@ -146,14 +143,14 @@ class ProfileScreen(private val userId: Long) : Screen {
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            if (user != null) { // 🔥 Evita errores de referencia nula
+                            if (user != null) {
                                 Button(onClick = {
-                                    navigator?.push(EditProfileScreen(user!!)) // ✅ Pasar `user!!` asegurando que no sea null
+                                    navigator?.push(EditProfileScreen(user!!))
                                 }) {
                                     Text("Editar perfil")
                                 }
                             } else {
-                                Text("Cargando datos de perfil...") // 🔥 Mensaje de carga si el usuario aún no está disponible
+                                Text("Cargando datos de perfil...")
                             }
 
                         }
@@ -187,7 +184,6 @@ class ProfileScreen(private val userId: Long) : Screen {
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                // 🟢 Fila con imagen pequeña, título y botón de eliminar
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
@@ -203,14 +199,12 @@ class ProfileScreen(private val userId: Long) : Screen {
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
 
-                                    // Título de la receta al centro
                                     Text(
                                         text = recipeCard.title,
                                         style = MaterialTheme.typography.bodyLarge,
                                         modifier = Modifier.weight(1f)
                                     )
 
-                                    // Botón de eliminar en la derecha, más pequeño
                                     IconButton(
                                         onClick = {
                                             viewModel.deleteRecipe(recipeCard.id) {
@@ -223,12 +217,11 @@ class ProfileScreen(private val userId: Long) : Screen {
                                             painter = painterResource(R.drawable.redtrashcanicon),
                                             contentDescription = "Eliminar receta",
                                             tint = MaterialTheme.colorScheme.error,
-                                            modifier = Modifier.size(16.dp) // Ícono más pequeño
+                                            modifier = Modifier.size(16.dp)
                                         )
                                     }
                                 }
 
-                                // 🔥 Imagen grande cuando se expande
                                 AnimatedVisibility(visible = expanded) {
                                     Column {
                                         if (!recipeCard.imageUrl.isNullOrEmpty()) {
@@ -243,7 +236,6 @@ class ProfileScreen(private val userId: Long) : Screen {
                                             Spacer(modifier = Modifier.height(8.dp))
                                         }
 
-                                        // Descripción y porciones cuando se expande
                                         Text(
                                             text = recipeCard.description,
                                             style = MaterialTheme.typography.bodySmall

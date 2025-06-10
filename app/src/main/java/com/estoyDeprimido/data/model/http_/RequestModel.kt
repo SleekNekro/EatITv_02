@@ -22,7 +22,7 @@ data class LikeRequest(
 
 @Serializable
 data class CreateRecipeRequest(
-    val userId: Long, //
+    val userId: Long,
     val title: String,
     val description: String,
     val servings: Int,

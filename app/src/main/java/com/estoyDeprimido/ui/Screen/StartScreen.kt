@@ -32,10 +32,8 @@ object StartScreen : Screen {
             loading = false
             println("Token leído: $token")
             if (token != null) {
-                // Aquí reemplazamos con la pantalla de Navigation, que es nuestro HomeTab
                 navigator.replaceAll(Navigation())
             } else {
-                // Si no hay token, seguimos mostrando el LoginScreen (o AuthScreen)
                 navigator.replaceAll(LoginScreen())
             }
         }

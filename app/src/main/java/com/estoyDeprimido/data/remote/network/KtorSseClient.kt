@@ -21,11 +21,11 @@ import kotlinx.io.IOException
 import okhttp3.TlsVersion
 
 object KtorSseClient {
-    var cachedToken: String? = null // 🔥 Token en memoria
+    var cachedToken: String? = null
 
     suspend fun initializeToken(context: Context) {
         println("🔎 Entrando en initializeToken()...")
-        cachedToken = UserPreferences.getToken(context) // 🔥 Recupera token desde DataStore
+        cachedToken = UserPreferences.getToken(context)
         println("✅ Token recuperado y asignado en KtorSseClient: $cachedToken")
     }
 
@@ -79,13 +79,13 @@ object KtorSseClient {
                     if (!response.status.isSuccess()) {
                         println("⚠️ Error en conexión SSE (${response.status}) - Reintentando en 5s...")
                         delay(5000)
-                        continue // 🔥 Evitar procesar una conexión fallida
+                        continue
                     }
 
                     val channel = response.bodyAsChannel()
                     while (!channel.isClosedForRead) {
                         val line = channel.readUTF8Line()
-                        println("🔍 Datos SSE recibidos: $line") // 🔥 Debug para verificar que llegan eventos
+                        println("🔍 Datos SSE recibidos: $line")
 
                         line?.takeIf { it.startsWith("data:") }?.let {
                             val jsonData = it.removePrefix("data: ").trim()

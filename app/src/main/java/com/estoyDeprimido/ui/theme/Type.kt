@@ -18,7 +18,7 @@ val roboto = FontFamily(
 val righteous = FontFamily(
     Font(R.font.righteous_regular)
 )
-// Set of Material typography styles to start with
+
 val MyTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = roboto,
