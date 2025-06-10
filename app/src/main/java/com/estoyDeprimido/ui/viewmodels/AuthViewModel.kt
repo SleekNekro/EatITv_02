@@ -2,13 +2,12 @@ package com.estoyDeprimido.ui.viewmodels
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.estoyDeprimido.data.model.http_.UpdateUserRequest
 import com.estoyDeprimido.data.preferences.UserPreferences
-import com.estoyDeprimido.data.remote.ApiService
 import com.estoyDeprimido.data.remote.RetrofitClient
 import com.estoyDeprimido.data.remote.network.KtorSseClient
 import com.estoyDeprimido.data.repository.UserRepository
@@ -19,6 +18,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class AuthViewModel(app: Application) : AndroidViewModel(app) {
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Initial)
@@ -45,32 +48,33 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun register(username: String, email: String, password: String) {
+    fun register(username: String, email: String, password: String, profilePicUri: Uri?, context: Context) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            UserRepository.register(
-                context = getApplication(),
-                email = email,
-                password = password,
-                username = username
-            )
-                .onSuccess { registerResponse ->
-                    // Si se devuelve un token, actualízalo; si no, no haces nada
-                    registerResponse.token?.let { token ->
-                        RetrofitClient.updateToken(token)
-                        KtorSseClient.updateToken(token)
-                        UserPreferences.saveUser(getApplication(), registerResponse.user, token)
-                    }
+            val requestBody = mutableMapOf<String, RequestBody>()
+            requestBody["username"] = username.toRequestBody("text/plain".toMediaTypeOrNull())
+            requestBody["email"] = email.toRequestBody("text/plain".toMediaTypeOrNull())
+            requestBody["password"] = password.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                    // Actualizamos el estado de éxito, independientemente del token
-                    _uiState.value = AuthUiState.Success(registerResponse.user)
-                    restartApp(getApplication())
+            val imagePart: MultipartBody.Part? = profilePicUri?.let { uri ->
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val bytes = inputStream?.readBytes()
+                inputStream?.close()
+                bytes?.toRequestBody("image/jpeg".toMediaTypeOrNull())?.let { requestFile ->
+                    MultipartBody.Part.createFormData("profilePic", "profile.jpg", requestFile)
                 }
-                .onFailure { error ->
-                    _uiState.value = AuthUiState.Error(error.message ?: "Error desconocido")
-                }
+            }
+
+            val response = RetrofitClient.createApiService(context).registerUser(requestBody, imagePart)
+
+            if (response.isSuccessful) {
+                Log.d("RegisterViewModel", "✅ Usuario registrado correctamente con foto")
+                restartApp(getApplication())
+            } else {
+                Log.e("RegisterViewModel", "❌ Error al registrar usuario")
+            }
         }
     }
+
     fun logout(context: Context, onLogoutComplete: () -> Unit) {
         viewModelScope.launch {
             UserPreferences.clearUserData(context) // Borra el token y otros datos.

@@ -12,6 +12,7 @@ import com.estoyDeprimido.ui.Screen.SearchScreen
 
 object SearchTab: Tab {
 
+    override val key = "SearchTab"
 
     override val options: TabOptions
         @Composable

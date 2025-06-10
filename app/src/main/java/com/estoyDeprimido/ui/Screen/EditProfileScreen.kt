@@ -81,18 +81,6 @@ class EditProfileScreen(private val user: UserData) : Screen {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = { imagePicker.launch("image/*") },
-                colors = ButtonDefaults.buttonColors(Color(0xFF66335A))
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "Seleccionar foto",
-                    tint = Color.White
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Seleccionar nueva foto", color = Color.White)
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

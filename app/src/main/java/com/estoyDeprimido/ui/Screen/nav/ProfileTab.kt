@@ -21,6 +21,8 @@ import com.estoyDeprimido.ui.Screen.ProfileScreen
 import com.estoyDeprimido.ui.viewmodels.ProfileViewModel
 
 object ProfileTab : Tab {
+    override val key = "ProfileTab"
+
     override val options: TabOptions
         @Composable
         get() {

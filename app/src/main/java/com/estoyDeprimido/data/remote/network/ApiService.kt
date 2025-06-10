@@ -1,4 +1,4 @@
-package com.estoyDeprimido.data.remote
+package com.estoyDeprimido.data.remote.network
 
 import com.estoyDeprimido.data.model.RecipeData
 import com.estoyDeprimido.data.model.UserData
@@ -6,11 +6,10 @@ import com.estoyDeprimido.data.model.http_.CreateRecipeRequest
 import com.estoyDeprimido.data.model.http_.FollowersCountResponse
 import com.estoyDeprimido.data.model.http_.LikeStatusResponse
 import com.estoyDeprimido.data.model.http_.LikesCountResponse
-import com.estoyDeprimido.data.model.http_.LikesResponse
 import com.estoyDeprimido.data.model.http_.LoginRequest
 import com.estoyDeprimido.data.model.http_.LoginResponse
-import com.estoyDeprimido.data.model.http_.RecipesResponse
 import com.estoyDeprimido.data.model.http_.RegisterRequest
+import com.estoyDeprimido.data.model.http_.RegisterResponeImg
 import com.estoyDeprimido.data.model.http_.RegisterResponse
 import com.estoyDeprimido.data.model.http_.UpdateUserRequest
 import com.estoyDeprimido.data.model.http_.UploadResponse
@@ -28,12 +27,17 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
+    @Multipart
     @POST("auth/register")
-    suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
+    suspend fun registerUser(
+        @PartMap fields: Map<String, @JvmSuppressWildcards RequestBody>,
+        @Part profilePic: MultipartBody.Part? // La imagen se envía como parte del formulario
+    ): Response<RegisterResponeImg>
 
     @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>

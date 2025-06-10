@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -70,7 +69,6 @@ class Navigation : Screen {
             val authViewModel: AuthViewModel = viewModel()
             val tabNavigator = LocalTabNavigator.current
             val navigator = LocalNavigator.current
-            val context = LocalContext.current
             val uiState by authViewModel.uiState.collectAsState()
 
             LaunchedEffect(uiState) {
@@ -118,45 +116,45 @@ class Navigation : Screen {
                     Modifier.border(1.dp, color = Color(0xFFCAC4D0))
                     BottomNavigation(backgroundColor = Color(0xFFDFDDCE)) {
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == HomeTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = HomeTab.options.icon!!,
                                     contentDescription = HomeTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = tabNavigator.current.key == HomeTab.key
                                 )
                             },
                             onClick = { tabNavigator.current = HomeTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == SearchTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = SearchTab.options.icon!!,
                                     contentDescription = SearchTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = tabNavigator.current.key == SearchTab.key
                                 )
                             },
                             onClick = { tabNavigator.current = SearchTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == CreateTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = CreateTab.options.icon!!,
                                     contentDescription = CreateTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = tabNavigator.current.key == CreateTab.key
                                 )
                             },
                             onClick = { tabNavigator.current = CreateTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == key,
+                            selected = tabNavigator.current.key == ProfileTab.key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = ProfileTab.options.icon!!,
                                     contentDescription = ProfileTab.options.title,
-                                    selected = (tabNavigator.current.key == key)
+                                    selected = tabNavigator.current.key == ProfileTab.key
                                 )
                             },
                             onClick = { tabNavigator.current = ProfileTab }

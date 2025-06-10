@@ -12,7 +12,7 @@ import com.estoyDeprimido.ui.Screen.CreateScreen
 
 object CreateTab: Tab {
 
-
+    override val key = "CreateTab"
     override val options: TabOptions
         @Composable
         get() {

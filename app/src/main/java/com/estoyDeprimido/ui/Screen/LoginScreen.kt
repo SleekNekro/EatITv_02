@@ -2,10 +2,13 @@ package com.estoyDeprimido.ui.Screen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -21,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil.compose.rememberAsyncImagePainter
 import com.estoyDeprimido.R
 import com.estoyDeprimido.ui.viewmodels.AuthViewModel
 import com.estoyDeprimido.ui.states.AuthUiState
@@ -198,6 +203,13 @@ fun RegisterForm(viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+
+    // Launcher para seleccionar imagen desde el almacenamiento
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        imageUri.value = uri
+    }
 
     Column {
         TextField(
@@ -227,13 +239,38 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón para enviar el formulario de registro.
+        // Botón para seleccionar imagen
+        Button(
+            onClick = { launcher.launch("image/*") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Seleccionar Foto de Perfil")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Mostrar la imagen seleccionada
+        imageUri.value?.let { uri ->
+            Image(
+                painter = rememberAsyncImagePainter(uri),
+                contentDescription = "Foto de perfil seleccionada",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Botón para enviar el formulario de registro con la imagen
         Button(
             onClick = { viewModel.register(
-                email = email,       // El campo de email recibe el valor de email
-                username = username, // El campo de username recibe el valor de username
-                password = password  // El campo de password recibe el valor de password
-            )  },
+                email = email,
+                username = username,
+                password = password,
+                profilePicUri = imageUri.value, // Se envía la imagen seleccionada al ViewModel
+                context = context
+            ) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -244,3 +281,4 @@ fun RegisterForm(viewModel: AuthViewModel) {
         }
     }
 }
+

@@ -2,6 +2,7 @@ package com.estoyDeprimido.data.remote
 
 import android.content.Context
 import com.estoyDeprimido.data.preferences.UserPreferences
+import com.estoyDeprimido.data.remote.network.ApiService
 import kotlinx.coroutines.runBlocking
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor

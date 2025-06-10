@@ -43,23 +43,23 @@ object UserRepository {
         Result.failure(e)
     }
 
-    suspend fun register(context: Context, email: String, password: String, username: String): Result<RegisterResponse> = try {
-        val api = RetrofitClient.createApiService(context)
-        Log.d("Register", "Username: $username, Email: $email, Password: $password")
-        val request = RegisterRequest(
-            email = email,
-            username = username,
-            password = password
-        )
-        val response = api.register(request)
-        if (response.isSuccessful) {
-            Result.success(response.body()!!)
-        } else {
-            Result.failure(Exception("Error en el registro"))
-        }
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
+//    suspend fun register(context: Context, email: String, password: String, username: String): Result<RegisterResponse> = try {
+//        val api = RetrofitClient.createApiService(context)
+//        Log.d("Register", "Username: $username, Email: $email, Password: $password")
+//        val request = RegisterRequestImg(
+//            email = email,
+//            username = username,
+//            password = password
+//        )
+//        val response = api.registerUser(request)
+//        if (response.isSuccessful) {
+//            Result.success(response.body()!!)
+//        } else {
+//            Result.failure(Exception("Error en el registro"))
+//        }
+//    } catch (e: Exception) {
+//        Result.failure(e)
+//    }
 
     suspend fun apiGetUserById(context: Context, userId: Long): UserData? {
         Log.d("UserRepository", "🟢 Solicitando datos para userId=$userId")

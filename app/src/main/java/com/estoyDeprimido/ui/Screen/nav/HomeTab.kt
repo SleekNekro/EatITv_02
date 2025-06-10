@@ -15,6 +15,8 @@ import org.github.sleeknekro.nav.ProfileTab
 
 
 object HomeTab: Tab {
+    override val key = "HomeTab"
+
     override val options: TabOptions
         @Composable
         get() {

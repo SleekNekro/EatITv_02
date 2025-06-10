@@ -27,6 +27,13 @@ data class RegisterResponse(
 )
 
 @Serializable
+data class RegisterResponeImg(
+    val user: UserResponse,
+    val profilePic: String,
+    val message: String
+)
+
+@Serializable
 data class ImageUploadResponse(
     val url: String
 )
