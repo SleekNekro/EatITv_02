@@ -60,5 +60,17 @@ object UserPreferences {
         Log.d("UserPreferences", "getUserId: User ID obtenido: ${prefs[longPreferencesKey("userId")] ?: "null o vacío"}")
         return prefs[longPreferencesKey("userId")]
     }
+    suspend fun clearUserData(context: Context) {
+        context.dataStore.edit { prefs ->
+            prefs.remove(stringPreferencesKey("token"))
+            prefs.remove(stringPreferencesKey("username"))
+            prefs.remove(stringPreferencesKey("email"))
+            prefs.remove(stringPreferencesKey("profilePic"))
+            prefs.remove(intPreferencesKey("followers"))
+            prefs.remove(longPreferencesKey("userId"))
+        }
+        Log.d(TAG1, "clearUserData: Datos del usuario y token eliminados correctamente")
+    }
+
 
 }

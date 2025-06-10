@@ -1,69 +1,112 @@
 package com.estoyDeprimido.ui.viewmodels
 
-import android.content.Context
+import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.estoyDeprimido.data.model.RecipeCardData
 import com.estoyDeprimido.data.model.UserData
+import com.estoyDeprimido.data.preferences.UserPreferences
+import com.estoyDeprimido.data.repository.LikeRepository
 import com.estoyDeprimido.data.repository.RecipeRepository
 import com.estoyDeprimido.data.repository.UserRepository
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val context: Context, private val userId: Long) : ViewModel() {
-    private val _user = mutableStateOf<UserData?>(null)
-    val user: MutableState<UserData?> = _user
+class ProfileViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val _recipes = mutableStateOf<List<RecipeCardData>>(emptyList())
-    val recipes: MutableState<List<RecipeCardData>> = _recipes
+    // Flujos para la lista de recetas del usuario
+    private val _recipes = MutableStateFlow<List<RecipeCardData>>(emptyList())
+    val recipes: StateFlow<List<RecipeCardData>> get() = _recipes
 
-    private val _followersCount = mutableStateOf(0)
-    val followersCount: MutableState<Int> = _followersCount
+    // Flujos para los datos del usuario
+    private val _user = MutableStateFlow<UserData?>(null)
+    val user: StateFlow<UserData?> get() = _user
 
-    private val _followingCount = mutableStateOf(0)
-    val followingCount: MutableState<Int> = _followingCount
+    // Flujos para los contadores (seguidores, seguidos, recetas)
+    private val _followersCount = MutableStateFlow(0)
+    val followersCount: StateFlow<Int> get() = _followersCount
 
-    private val _recipeCount = mutableStateOf(0)
-    val recipeCount: MutableState<Int> = _recipeCount
+    private val _followingCount = MutableStateFlow(0)
+    val followingCount: StateFlow<Int> get() = _followingCount
 
-    init {
+    private val _recipeCount = MutableStateFlow(0)
+    val recipeCount: StateFlow<Int> get() = _recipeCount
+
+    private var recipesLoaded = false
+    fun loadProfileRecipes() {
+        if (recipesLoaded) return
         viewModelScope.launch {
             try {
-                val userDeferred = async { UserRepository.apiGetUserById(context, userId) }
-                val recipesDeferred = async { RecipeRepository.getUserRecipes(context, userId) }
-                val followersDeferred = async { UserRepository.getFollowers(context, userId) }
-                val followingDeferred = async { UserRepository.getFollowing(context, userId) }
+                // Obtén el userId de las preferencias
+                val userId = UserPreferences.getUserId(getApplication())
 
-                _user.value = userDeferred.await()
-                val rawRecipes = recipesDeferred.await()
+                // Carga los datos básicos del usuario
+                val userData = UserRepository.apiGetUserById(getApplication(), userId!!)
+                if(userData != null) {
+                    _user.value = userData
+                    // Se asume que 'userData' tiene estos campos; de lo contrario, asigna valores por defecto
+                    _followersCount.value = userData.followers ?: 0
+                    _followingCount.value = userData.following ?: 0
+                }
 
-                _recipes.value = rawRecipes.map { recipe ->
+                // Carga todas las recetas
+                val recipesData = RecipeRepository.getRecipes(getApplication())
+                val baseUrl = "https://eatitv03-production.up.railway.app"
+
+                // Filtra las recetas que pertenecen al usuario
+                val userRecipes = recipesData.filter { recipe ->
+                    recipe.userId == userId
+                }
+
+                // Mapea las recetas para preparar los datos (construir URL, obtener likes, etc.)
+                val mergedList = userRecipes.map { recipe ->
+                    val absoluteImageUrl = if (recipe.imageUrl != null && recipe.imageUrl.startsWith("/")) {
+                        "$baseUrl${recipe.imageUrl}"
+                    } else {
+                        recipe.imageUrl
+                    }
+                    // Obtén datos adicionales del usuario que creó la receta
+                    // (en este caso podría ser el mismo que userData, pero lo dejamos por si hay variación)
+                    val recipeUser = UserRepository.apiGetUserById(getApplication(), recipe.userId)
+                        ?: return@map null
+                    val freshLikes = LikeRepository.getLikesCount(getApplication(), recipe.id)
+                    val userHasLiked = LikeRepository.getLikeStatus(getApplication(), userId!!, recipe.id)
+
                     RecipeCardData(
                         id = recipe.id,
                         title = recipe.title,
                         description = recipe.description,
-                        servings = recipe.servings,
-                        imageUrl = recipe.imageUrl,
+                        servings = recipe.servings.toString(),
+                        imageUrl = absoluteImageUrl,
                         createdAt = recipe.createdAt,
-                        user = _user.value,
-                        likesCount = 0,
-                        isLiked = false
+                        user = recipeUser,
+                        likesCount = freshLikes,
+                        isLiked = userHasLiked
                     )
-                }
+                }.filterNotNull()
 
-                _recipeCount.value = rawRecipes.size
-
-                // ✅ Corrección: Actualizar los seguidores correctamente sin usar `ProfileData`
-                _followersCount.value = followersDeferred.await().followers_count.toInt()
-                _followingCount.value = followingDeferred.await().following_count.toInt()
-
-                Log.d("ProfileViewModel", "🟢 Datos cargados correctamente con seguidores y recetas")
-
+                // Actualiza el flujo de recetas y el contador
+                _recipes.value = mergedList
+                _recipeCount.value = mergedList.size
+                recipesLoaded = true
             } catch (e: Exception) {
-                Log.e("ProfileViewModel", "🔴 Error al cargar datos: ${e.localizedMessage}")
+                Log.e("ProfileViewModel", "Error cargando recetas: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteRecipe(recipeId: Long, onDeletionSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                RecipeRepository.deleteRecipe(getApplication(), recipeId)
+                _recipes.value = _recipes.value.filterNot { it.id == recipeId }
+                // Actualiza el contador de recetas
+                _recipeCount.value = _recipes.value.size
+                onDeletionSuccess()
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error borrando receta: ${e.message}")
             }
         }
     }

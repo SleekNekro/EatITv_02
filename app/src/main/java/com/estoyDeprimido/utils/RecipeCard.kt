@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +43,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
-fun RecipeCard(recipe: RecipeCardData) {
+fun RecipeCard(
+    recipe: RecipeCardData,
+    onDeleteClick: (() -> Unit)? = null // Callback opcional para eliminar la receta
+) {
     var showPopup by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -58,9 +64,8 @@ fun RecipeCard(recipe: RecipeCardData) {
         }
     }
 
-
     if (showPopup) {
-        RecipeDetailPopup(recipe, onDismiss = { showPopup = false }) // 🔥 Ahora el popup se activa correctamente
+        RecipeDetailPopup(recipe, onDismiss = { showPopup = false })
     }
 
     Card(
@@ -75,20 +80,23 @@ fun RecipeCard(recipe: RecipeCardData) {
             Image(
                 painter = rememberAsyncImagePainter(recipe.imageUrl),
                 contentDescription = "Imagen de la receta",
-                modifier = Modifier.size(80.dp).clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 recipe.user?.let { Text(text = it.username, color = Color.Black) }
-                Text(text = recipe.title, style = MaterialTheme.typography.titleLarge, color = Color.Black)
+                Text(
+                    text = recipe.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.Black
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
-
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                //Text(text = "$likesCount Likes", style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.width(8.dp))
+                // Por ejemplo el botón de like
                 LikeButton(
                     context = context,
                     userId = userId,
@@ -99,6 +107,18 @@ fun RecipeCard(recipe: RecipeCardData) {
                     recipe.likesCount = newLikesCount
                     likesCount = newLikesCount
                     isLiked = newLikedState
+                }
+                // Si onDeleteClick está definido, mostramos el ícono de eliminar
+                if (onDeleteClick != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar receta",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onDeleteClick() }
+                    )
                 }
             }
         }
@@ -115,14 +135,25 @@ fun RecipeDetailPopup(recipe: RecipeCardData, onDismiss: () -> Unit) {
                 Image(
                     painter = rememberAsyncImagePainter(recipe.imageUrl),
                     contentDescription = "Imagen de la receta",
-                    modifier = Modifier.size(200.dp).clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Por: ${recipe.user?.username ?: "Desconocido"}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Comensales: ${recipe.servings}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Por: ${recipe.user?.username ?: "Desconocido"}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Comensales: ${recipe.servings}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = recipe.description, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = recipe.description,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         },
         confirmButton = {
@@ -132,8 +163,3 @@ fun RecipeDetailPopup(recipe: RecipeCardData, onDismiss: () -> Unit) {
         }
     )
 }
-
-
-
-
-

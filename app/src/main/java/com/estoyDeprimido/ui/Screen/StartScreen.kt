@@ -16,7 +16,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.estoyDeprimido.data.preferences.UserPreferences
 import com.estoyDeprimido.ui.Screen.LoginScreen
-import org.github.sleeknekro.nav.Navigation
+import com.estoyDeprimido.ui.Screen.nav.Navigation
 
 object StartScreen : Screen {
     @Composable

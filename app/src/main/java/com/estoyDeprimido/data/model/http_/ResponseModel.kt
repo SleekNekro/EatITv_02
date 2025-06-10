@@ -16,6 +16,10 @@ data class RecipesResponse(
     val recipes: List<RecipeData>
 )
 
+data class UploadResponse(
+    val location: String
+)
+
 @Serializable
 data class RegisterResponse(
     val token: String,

@@ -72,6 +72,11 @@ dependencies {
 
     implementation ("androidx.compose.runtime:runtime-livedata")
 
+    implementation("io.ktor:ktor-client-auth:2.3.0")
+
+    implementation("io.ktor:ktor-client-logging:2.3.0")
+
+    implementation("io.ktor:ktor-client-cio:2.3.0")
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

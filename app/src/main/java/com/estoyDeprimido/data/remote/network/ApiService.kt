@@ -2,6 +2,7 @@ package com.estoyDeprimido.data.remote
 
 import com.estoyDeprimido.data.model.RecipeData
 import com.estoyDeprimido.data.model.UserData
+import com.estoyDeprimido.data.model.http_.CreateRecipeRequest
 import com.estoyDeprimido.data.model.http_.FollowersCountResponse
 import com.estoyDeprimido.data.model.http_.LikeStatusResponse
 import com.estoyDeprimido.data.model.http_.LikesCountResponse
@@ -11,14 +12,22 @@ import com.estoyDeprimido.data.model.http_.LoginResponse
 import com.estoyDeprimido.data.model.http_.RecipesResponse
 import com.estoyDeprimido.data.model.http_.RegisterRequest
 import com.estoyDeprimido.data.model.http_.RegisterResponse
+import com.estoyDeprimido.data.model.http_.UpdateUserRequest
+import com.estoyDeprimido.data.model.http_.UploadResponse
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -31,6 +40,9 @@ interface ApiService {
 
     @GET("user/{id}")
     suspend fun getUserProfile(@Path("id") userId: Long): Response<UserData>
+
+    @PATCH("user/{id}")
+    suspend fun updateUser(@Path("id") id: Long, @Body request: UpdateUserRequest): Response<Unit>
 
     @GET("follower/{id}/followers/count")
     suspend fun getUserFollowers(@Path("id") userId: Long): FollowersCountResponse
@@ -61,10 +73,36 @@ interface ApiService {
         @Path("recipeId") recipeId: Long
     ): Response<LikeStatusResponse>
 
+    @DELETE("recipe/{id}")
+    suspend fun deleteRecipe(@Path("id") recipeId: Long): Response<Unit>
+
     @PUT("like")
     @FormUrlEncoded
     suspend fun removeLike(
         @Field("userId") userId: Long,
         @Field("recipeId") recipeId: Long
+    ): Response<Unit>
+
+    @Multipart
+    @POST("/upload")
+    suspend fun uploadImage(
+        @Part file: MultipartBody.Part
+    ): UploadResponse
+
+
+        @Multipart
+        @PATCH("user/{id}")
+        suspend fun updateUserMultipart(
+            @Path("id") userId: Long,
+            @Part("username") username: RequestBody,
+            @Part("email") email: RequestBody,
+            @Part("password") password: RequestBody?,  // Puede ser nulo
+            @Part profilePic: MultipartBody.Part?        // La foto, también puede ser nula
+        ): Response<ResponseBody> // O la respuesta que definas
+
+
+    @POST("/recipe")
+    suspend fun createRecipe(
+        @Body recipe: CreateRecipeRequest
     ): Response<Unit>
 }

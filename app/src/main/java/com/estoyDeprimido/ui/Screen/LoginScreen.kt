@@ -24,7 +24,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.estoyDeprimido.R
 import com.estoyDeprimido.ui.viewmodels.AuthViewModel
 import com.estoyDeprimido.ui.states.AuthUiState
-import org.github.sleeknekro.nav.Navigation
+import com.estoyDeprimido.ui.Screen.nav.Navigation
 
 class LoginScreen : Screen {
     @Composable
@@ -201,19 +201,19 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
     Column {
         TextField(
-            value = username,
-            onValueChange = { username = it },
+            value = email,
+            onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Username") }
+            label = { Text("Email") }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         TextField(
-            value = email,
-            onValueChange = { email = it },
+            value = username,
+            onValueChange = { username = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Email") }
+            label = { Text("Username") }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -229,7 +229,11 @@ fun RegisterForm(viewModel: AuthViewModel) {
 
         // Botón para enviar el formulario de registro.
         Button(
-            onClick = { viewModel.register(username, email, password) },
+            onClick = { viewModel.register(
+                email = email,       // El campo de email recibe el valor de email
+                username = username, // El campo de username recibe el valor de username
+                password = password  // El campo de password recibe el valor de password
+            )  },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

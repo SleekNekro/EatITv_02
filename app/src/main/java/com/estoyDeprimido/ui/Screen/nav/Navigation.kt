@@ -1,4 +1,4 @@
-package org.github.sleeknekro.nav
+package com.estoyDeprimido.ui.Screen.nav
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
@@ -10,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,18 +32,25 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabDisposable
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.estoyDeprimido.R
-import com.estoyDeprimido.ui.Screen.nav.SearchTab
-
+import com.estoyDeprimido.ui.states.AuthUiState
+import com.estoyDeprimido.ui.viewmodels.AuthViewModel
+import com.estoyDeprimido.utils.LogoutButton
+import org.github.sleeknekro.nav.CreateTab
+import org.github.sleeknekro.nav.HomeTab
+import org.github.sleeknekro.nav.ProfileTab
 
 class Navigation : Screen {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -57,13 +67,27 @@ class Navigation : Screen {
                 )
             }
         ) {
+            val authViewModel: AuthViewModel = viewModel()
             val tabNavigator = LocalTabNavigator.current
+            val navigator = LocalNavigator.current
+            val context = LocalContext.current
+            val uiState by authViewModel.uiState.collectAsState()
+
+            LaunchedEffect(uiState) {
+                if (uiState is AuthUiState.Loggedout) {
+                    navigator?.replaceAll(LoginTab)
+                }
+            }
+
             Scaffold(
                 content = { CurrentTab() },
                 topBar = {
                     TopAppBar(
                         title = {
-                            Row {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Spacer(Modifier.width(16.dp))
                                 Image(
                                     painter = painterResource(R.drawable.logoeatit_claro),
@@ -78,56 +102,61 @@ class Navigation : Screen {
                                     modifier = Modifier.size(120.dp),
                                     alignment = Alignment.TopCenter
                                 )
+
+                                Spacer(Modifier.weight(1f)) // 🔥 Empuja el botón hacia la derecha
+
+                                LogoutButton(authViewModel)
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color(0xFF66335A)
                         )
                     )
-                },
+                }
+                ,
                 bottomBar = {
                     Modifier.border(1.dp, color = Color(0xFFCAC4D0))
                     BottomNavigation(backgroundColor = Color(0xFFDFDDCE)) {
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == HomeTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = HomeTab.options.icon!!,
                                     contentDescription = HomeTab.options.title,
-                                    selected = (tabNavigator.current.key == HomeTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = HomeTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == SearchTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = SearchTab.options.icon!!,
                                     contentDescription = SearchTab.options.title,
-                                    selected = (tabNavigator.current.key == SearchTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = SearchTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == CreateTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = CreateTab.options.icon!!,
                                     contentDescription = CreateTab.options.title,
-                                    selected = (tabNavigator.current.key == CreateTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = CreateTab }
                         )
                         BottomNavigationItem(
-                            selected = tabNavigator.current.key == ProfileTab.key,
+                            selected = tabNavigator.current.key == key,
                             icon = {
                                 FancyBottomNavigationIcon(
                                     painter = ProfileTab.options.icon!!,
                                     contentDescription = ProfileTab.options.title,
-                                    selected = (tabNavigator.current.key == ProfileTab.key)
+                                    selected = (tabNavigator.current.key == key)
                                 )
                             },
                             onClick = { tabNavigator.current = ProfileTab }

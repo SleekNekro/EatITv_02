@@ -40,4 +40,11 @@ object RecipeRepository {
             throw Exception("Error al obtener recetas del usuario: ${response.code()}")
         }
     }
+
+    suspend fun deleteRecipe(context: Context, recipeId: Long) {
+        val response = RetrofitClient.createApiService(context).deleteRecipe(recipeId)
+        if (!response.isSuccessful) {
+            throw Exception("Error al eliminar receta: ${response.code()}")
+        }
+    }
 }

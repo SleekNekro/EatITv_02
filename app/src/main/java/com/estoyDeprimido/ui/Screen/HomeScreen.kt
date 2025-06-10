@@ -25,7 +25,7 @@ import com.estoyDeprimido.ui.viewmodels.RecipeFeedViewModel
 import com.estoyDeprimido.utils.RecipeCard
 
 @Composable
-fun HomeScreen(feedViewModel: RecipeFeedViewModel = viewModel(), onUserClick: (Long) -> Unit) {
+fun HomeScreen(feedViewModel: RecipeFeedViewModel = viewModel(), onUserClick: @Composable (Long) -> Unit) {
     val recipesState by feedViewModel.recipes.collectAsState()
     val listState = rememberLazyListState()
 

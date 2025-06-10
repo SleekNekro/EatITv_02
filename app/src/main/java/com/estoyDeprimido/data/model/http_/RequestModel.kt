@@ -10,14 +10,23 @@ data class LoginRequest(
 
 @Serializable
 data class RegisterRequest(
+    val email: String,
     val username: String,
     val password: String,
-    val email: String,
 )
 
 data class LikeRequest(
     val userId: Long,
     val recipeId: Long
+)
+
+@Serializable
+data class CreateRecipeRequest(
+    val userId: Long, //
+    val title: String,
+    val description: String,
+    val servings: Int,
+    val imageUrl: String?
 )
 
 

@@ -1,7 +1,6 @@
 package com.estoyDeprimido.data.remote
 
 import android.content.Context
-import android.util.Log
 import com.estoyDeprimido.data.preferences.UserPreferences
 import kotlinx.coroutines.runBlocking
 import okhttp3.ConnectionSpec
@@ -17,31 +16,34 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 object RetrofitClient {
-    private const val BASE_URL = "https://75b7-212-57-66-242.ngrok-free.app"
+    const val BASE_URL = "https://eatitv03-production.up.railway.app"
     private const val TAG = "RetrofitClient"
 
-    // 🔥 Token almacenado en memoria para evitar múltiples accesos a UserPreferences
     private var cachedToken: String? = null
 
     fun updateToken(token: String) {
         cachedToken = token
+        println("✅ Token actualizado en RetrofitClient: $cachedToken")
     }
 
-    // Interceptor que añade el header "Authorization" en cada request
     private class AuthInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val token = cachedToken ?: ""
+            val currentHost = BASE_URL.substringAfter("//").substringBefore("/")
 
             val newRequest = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
-
-            return chain.proceed(newRequest)
+            return try {
+                chain.proceed(newRequest)
+            } catch (e: Exception) {
+                println("⚠️ Error en AuthInterceptor: ${e.message}")
+                throw e
+            }
         }
     }
 
     fun createApiService(context: Context): ApiService {
-        // 🔥 Recuperar el token desde UserPreferences y actualizar el cache
         val token = runBlocking { UserPreferences.getToken(context) } ?: ""
         updateToken(token)
 
@@ -50,7 +52,6 @@ object RetrofitClient {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        // 🔥 Configurar TrustManager para aceptar certificados autofirmados (Solo en desarrollo)
         val trustAllCerts = arrayOf<TrustManager>(
             object : X509TrustManager {
                 override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
@@ -59,14 +60,14 @@ object RetrofitClient {
             }
         )
 
-        val sslContext = SSLContext.getInstance("TLS")
+        val sslContext = SSLContext.getInstance("TLSv1.2")  // 🔥 Forzar TLS 1.2
         sslContext.init(null, trustAllCerts, java.security.SecureRandom())
         val sslSocketFactory = sslContext.socketFactory
 
         val okHttpClient = OkHttpClient.Builder()
             .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-            .hostnameVerifier { _, _ -> true }
-            .connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT))
+            .connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)) // 🔥 Eliminado CLEARTEXT
+            //.hostnameVerifier { _, _ -> true }  // 🔥 Comentado para pruebas
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
@@ -78,5 +79,4 @@ object RetrofitClient {
             .build()
             .create(ApiService::class.java)
     }
-
 }

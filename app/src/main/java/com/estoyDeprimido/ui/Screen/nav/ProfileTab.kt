@@ -11,12 +11,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.estoyDeprimido.R
 import com.estoyDeprimido.data.preferences.UserPreferences
 import com.estoyDeprimido.ui.Screen.ProfileScreen
-import kotlinx.coroutines.runBlocking
+import com.estoyDeprimido.ui.viewmodels.ProfileViewModel
 
 object ProfileTab : Tab {
     override val options: TabOptions
@@ -36,28 +38,27 @@ object ProfileTab : Tab {
     override fun Content() {
         val context = LocalContext.current
         var userId by remember { mutableStateOf<Long?>(null) }
+        val viewModel: ProfileViewModel = viewModel()
 
         LaunchedEffect(Unit) {
             userId = UserPreferences.getUserId(context)
-            Log.d("ProfileTAB", "User ID obtenido en LaunchedEffect: $userId")
+            Log.d("ProfileTAB", "User ID obtenido: $userId")
+
+            if (userId != null) {
+                viewModel.loadProfileRecipes() // 🔥 Cargar recetas ANTES de navegar al perfil
+            }
         }
 
         when {
             userId == null -> {
-                Log.d("ProfileTAB", "Esperando a que se obtenga userId...")
                 Text(text = "Cargando perfil...", style = MaterialTheme.typography.bodyMedium)
             }
             userId!! > 0L -> {
-                Log.d("ProfileTAB", "✅ Navegando a ProfileScreen con userId=$userId") // 🔥 Verificación clave
-                cafe.adriel.voyager.navigator.Navigator(ProfileScreen(userId = userId!!)) // 🚀 Agrega la navegación con Voyager
+                Navigator(screen = ProfileScreen(userId = userId!!))
             }
             else -> {
-                Log.e("ProfileTAB", "❌ Error: userId sigue siendo 0L después de obtenerlo")
                 Text(text = "Error al obtener perfil", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
-
-
 }
-

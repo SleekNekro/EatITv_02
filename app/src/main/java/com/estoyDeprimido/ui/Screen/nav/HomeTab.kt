@@ -33,7 +33,7 @@ object HomeTab: Tab {
         val navigator = LocalNavigator.currentOrThrow
 
         HomeScreen(onUserClick = { userId ->
-            navigator.push(ProfileScreen(userId))
+
         })
     }
 }
